@@ -1,6 +1,6 @@
 # Memory Quest Elite
 
-![logo](assets/logo.png)
+![logo](assets/logo.jpg)
 
 ## Project Description
 **Memory Quest Elite** is a browser-based memory card matching game that challenges players to find pairs of cards. The game features multiple difficulty levels, dynamic day/night themes, achievements, and real-time tracking of score, coins, combos, and hints. It is designed to run smoothly on both desktop and mobile browsers.
