@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Memory Quest</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="cvs"></canvas>
+    <div class="toast" id="toast"></div>
+
+    <!-- ═══ FLOAT TOP BAR ═══ -->
+    <div class="topbar">
+      <button class="tbtn" id="sndbtn" onclick="toggleSnd()">
+        <span class="ti">🔊</span><span id="snlbl">SOUND</span>
+      </button>
+      <button class="tbtn" onclick="toggleTheme()">
+        <span class="ti" id="thico">☀️</span><span id="thlbl">DAY</span>
+      </button>
+    </div>
+
+    <!-- ═══════════════ START SCREEN ═══════════════ -->
+    <div id="ss" class="scr">
+      <div class="logo" onclick="snd(A.logo)" title="Memory Quest">🧠</div>
+      <h1 class="gtitle">MEMORY QUEST</h1>
+      <p class="gsub">Elite Edition · 2026</p>
+
+      <!-- persistent meta chips -->
+      <div class="mrow">
+        <div class="mchip mc-gold" onclick="snd(A.coin)" title="Total Coins">
+          <span>💰</span><span class="mv" id="mc">0</span>
+        </div>
+        <div class="mchip mc-blue" onclick="snd(A.score)" title="Best Score">
+          <span>⭐</span><span class="mv" id="mb">0</span>
+        </div>
+        <div class="mchip mc-green" onclick="snd(A.ach)" title="Achievements">
+          <span>🏆</span><span class="mv" id="ma">0/5</span>
+        </div>
+      </div>
+
+      <!-- achievements row -->
+      <p class="slbl">ACHIEVEMENTS</p>
+      <div class="achgrid" id="ag"></div>
+
+      <!-- level cards — horizontal, side by side -->
+      <p class="slbl">SELECT DIFFICULTY</p>
+      <div class="lvlrow">
+        <div
+          class="lcard l-easy sel"
+          id="lc-easy"
+          onclick="setLvl('easy', this)"
+        >
+          <span class="lico">🌿</span>
+          <div class="lname">EASY</div>
+          <div class="lpairs">4 Pairs</div>
+          <span class="ldiff">Beginner</span>
+        </div>
+        <div class="lcard l-med" id="lc-med" onclick="setLvl('medium', this)">
+          <span class="lico">⚡</span>
+          <div class="lname">MEDIUM</div>
+          <div class="lpairs">8 Pairs</div>
+          <span class="ldiff">Skilled</span>
+        </div>
+        <div class="lcard l-hard" id="lc-hard" onclick="setLvl('hard', this)">
+          <span class="lico">💀</span>
+          <div class="lname">HARD</div>
+          <div class="lpairs">12 Pairs</div>
+          <span class="ldiff">Legend</span>
+        </div>
+      </div>
+
+      <button class="sbtn" onclick="initGame()">▶ &nbsp;START MISSION</button>
+    </div>
+
+    <!-- ═══════════════ GAME SCREEN ═══════════════ -->
+    <div id="gs" class="scr off">
+      <!-- compact HUD -->
+      <div class="hud">
+        <div class="hstat" onclick="snd(A.tick)" title="Timer">
+          <span class="hlbl">⏱ Timer</span>
+          <span class="hval c-time" id="clk">00:00</span>
+        </div>
+        <div class="hdiv"></div>
+        <div class="hstat" onclick="snd(A.heart)" title="Lives">
+          <span class="hlbl">❤ Lives</span>
+          <div class="hearts" id="hts"></div>
+        </div>
+        <div class="hdiv"></div>
+        <div class="hstat" onclick="snd(A.err)" title="Errors">
+          <span class="hlbl">✖ Errors</span>
+          <span class="hval c-err" id="herr">0</span>
+        </div>
+        <div class="hdiv"></div>
+        <div class="hstat" onclick="snd(A.score)" title="Score">
+          <span class="hlbl">⭐ Score</span>
+          <span class="hval c-score" id="hsc">0</span>
+        </div>
+        <div class="hdiv"></div>
+        <div class="hstat" onclick="snd(A.coin)" title="Coins">
+          <span class="hlbl">💰 Coins</span>
+          <span class="hval c-coins" id="hco">0</span>
+        </div>
+        <div class="hdiv"></div>
+        <div class="hstat" onclick="snd(A.combo)" title="Combo">
+          <span class="hlbl">🔥 Combo</span>
+          <span class="hval c-combo" id="hcb">×1</span>
+        </div>
+        <div class="hdiv"></div>
+        <div class="hstat" onclick="snd(A.hint)" title="Hints">
+          <span class="hlbl">💡 Hints</span>
+          <span class="hval c-hints" id="hhi">3</span>
+        </div>
+      </div>
+
+      <!-- progress -->
+      <div class="pwrap">
+        <div class="pfill" id="pf" style="width: 0%"></div>
+      </div>
+
+      <!-- board -->
+      <div id="gb" class="g4"></div>
+
+      <!-- action strip -->
+      <div class="astrip">
+        <button class="abtn ab-hint" id="hintbtn" onclick="useHint()">
+          <span class="bi">💡</span>HINT
+        </button>
+        <button class="abtn ab-menu" onclick="toMenu()">
+          <span class="bi">🏠</span>MENU
+        </button>
+        <button class="abtn ab-quit" onclick="doQuit()">
+          <span class="bi">✖</span>QUIT
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════ WIN SCREEN ═══════════════ -->
+    <div id="ws" class="scr off">
+      <div class="rcard rwin">
+        <span class="remo">🎉</span>
+        <h1 class="rtit twi">MISSION COMPLETE</h1>
+        <div class="sbig" id="wsc">⭐ 0</div>
+        <div class="srows" id="wst"></div>
+        <div
+          id="wach"
+          style="font-size: 0.75rem; color: var(--text2); margin-bottom: 6px"
+        ></div>
+        <div class="rbtns">
+          <button class="rbtn rb-play" onclick="replay()">▶ PLAY AGAIN</button>
+          <button class="rbtn rb-menu" onclick="toMenu()">🏠 MENU</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ GAME OVER SCREEN ═══════════════ -->
+    <div id="gos" class="scr off">
+      <div class="rcard rlose">
+        <span class="remo">💀</span>
+        <h1 class="rtit tlo">GAME OVER</h1>
+        <p style="font-size: 0.82rem; color: var(--text2); margin-bottom: 7px">
+          3 mistakes — mission failed!
+        </p>
+        <div class="srows" id="gst"></div>
+        <div class="rbtns">
+          <button class="rbtn rb-retry" onclick="replay()">🔄 TRY AGAIN</button>
+          <button class="rbtn rb-menu" onclick="toMenu()">🏠 MENU</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ AUDIO ═══════════════ -->
+    <!-- Background music -->
+    <audio id="bgm-menu" loop src="assets/sounds/bgm.mp3"></audio>
+    <audio id="bgm-game" loop src="assets/sounds/bgm.mp3"></audio>
+    <audio id="bgm-over" src="assets/sounds/gameover.mp3"></audio>
+
+    <audio id="sfx-flip" src="assets/sounds/select.mp3"></audio>
+    <audio id="sfx-match" src="assets/sounds/coins.mp3"></audio>
+    <audio id="sfx-wrong" src="assets/sounds/error.mp3"></audio>
+    <audio id="sfx-win" src="assets/sounds/victory.mp3"></audio>
+    <audio id="sfx-btn" src="assets/sounds/select.mp3"></audio>
+    <audio id="sfx-ach" src="assets/sounds/select.mp3"></audio>
+
+    <audio id="sfx-coin" src="assets/sounds/coins.mp3"></audio>
+    <audio id="sfx-heart" src="assets/sounds/error.mp3"></audio>
+    <audio
+      id="sfx-combo"
+      src="https://www.zapsplat.com/wp-content/uploads/2019/sound-effects/ui_positive_tone.mp3"
+    ></audio>
+    <audio id="sfx-hint" src="assets/sounds/build.mp3"></audio>
+    <audio id="sfx-score" src="assets/sounds/house.mp3"></audio>
+    <audio id="sfx-lvl" src="assets/sounds/select.mp3"></audio>
+    <script src="script.js"></script>
+  </body>
+</html>
